@@ -2,6 +2,7 @@ package main
 
 import (
   "context"
+  "encoding/json"
   "log"
 
   "github.com/hakamadare/yaas-go/yaas"
@@ -19,7 +20,15 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
   ys,e := yaas.Yes()
 
   if (e == nil) {
-    return events.APIGatewayProxyResponse{Body: string(ys), StatusCode: 200}, e
+    marshaled,err := json.Marshal(string(ys))
+
+    if (err != nil) {
+      return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500}, e
+    }
+
+    body := string(marshaled)
+
+    return events.APIGatewayProxyResponse{Body: body, StatusCode: 200}, e
   } else {
     return events.APIGatewayProxyResponse{Body: e.Error(), StatusCode: 500}, e
   }
