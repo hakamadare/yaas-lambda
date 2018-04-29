@@ -3,6 +3,10 @@
 .env
 vendor/*
 
+# Lambda deployment package
+main
+main.zip
+
 # Binaries for programs and plugins
 *.exe
 *.exe~
