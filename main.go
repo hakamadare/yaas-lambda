@@ -15,7 +15,7 @@ func main() {
 }
 
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-  log.Print("request ID: %s", request.RequestContext.RequestID)
+  log.Printf("request ID: %s", request.RequestContext.RequestID)
 
   ys,e := yaas.Yes()
 
@@ -28,8 +28,18 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
     body := string(marshaled)
 
-    return events.APIGatewayProxyResponse{Body: body, StatusCode: 200}, e
+    return events.APIGatewayProxyResponse{Body: body, StatusCode: 200, Headers: corsHeaders()}, e
   } else {
-    return events.APIGatewayProxyResponse{Body: e.Error(), StatusCode: 500}, e
+    return events.APIGatewayProxyResponse{Body: e.Error(), StatusCode: 500, Headers: corsHeaders()}, e
   }
+}
+
+func corsHeaders() (map[string]string) {
+  headers := map[string]string{
+    "Access-Control-Allow-Methods": "GET",
+    "Access-Control-Allow-Headers": "*",
+    "Access-Control-Allow-Origin": "*",
+  }
+
+  return headers
 }
