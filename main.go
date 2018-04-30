@@ -22,15 +22,18 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
 
   // inspect the request path
   rpath := request.Path
+  rbody := request.Body
   log.Printf("path: %s", rpath)
+  log.Printf("body: %s", rbody)
 
   switch rpath {
   case "/yaas/invert":
-    body,e := parseJsonBody(request.Body)
+    body,e := parseJsonBody(rbody)
     if e != nil {
       err = e
+      log.Printf("error parsing JSON '%s': %s", body, err)
     } else {
-      ys,err = yaas.ParsedYes(body)
+      ys,err = yaas.Inverse(yaas.ParsedYes(body))
     }
   case "/yaas":
     ys,err = yaas.Yes()
