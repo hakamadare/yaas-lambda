@@ -17,21 +17,44 @@ func main() {
 func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
   log.Printf("request ID: %s", request.RequestContext.RequestID)
 
-  ys,e := yaas.Yes()
+  var ys yaas.YesString
+  var err error
 
-  if (e == nil) {
+  // inspect the request path
+  rpath := request.Path
+  log.Printf("path: %s", rpath)
+
+  switch rpath {
+  case "/yaas/invert":
+    body,e := parseJsonBody(request.Body)
+    if e != nil {
+      err = e
+    } else {
+      ys,err = yaas.ParsedYes(body)
+    }
+  case "/yaas":
+    ys,err = yaas.Yes()
+  }
+
+  if (err == nil) {
     marshaled,err := json.Marshal(string(ys))
 
     if (err != nil) {
-      return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500}, e
+      return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500}, err
     }
 
     body := string(marshaled)
 
-    return events.APIGatewayProxyResponse{Body: body, StatusCode: 200, Headers: corsHeaders()}, e
+    return events.APIGatewayProxyResponse{Body: body, StatusCode: 200, Headers: corsHeaders()}, err
   } else {
-    return events.APIGatewayProxyResponse{Body: e.Error(), StatusCode: 500, Headers: corsHeaders()}, e
+    return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500, Headers: corsHeaders()}, err
   }
+}
+
+func parseJsonBody(body string) (string, error) {
+  var bs string
+  err := json.Unmarshal([]byte(body), &bs)
+  return bs,err
 }
 
 func corsHeaders() (map[string]string) {

@@ -16,7 +16,7 @@
   branch = "master"
   name = "github.com/hakamadare/yaas-go"
   packages = ["yaas"]
-  revision = "8cfcce98d0d0dbf99377142d2a428b1218ebf0a9"
+  revision = "c4d68588b7579f0f2ddb9d66db374d17bcf7a7c7"
 
 [solve-meta]
   analyzer-name = "dep"
