@@ -13,10 +13,10 @@
   version = "v1.1.0"
 
 [[projects]]
-  branch = "master"
   name = "github.com/hakamadare/yaas-go"
   packages = ["yaas"]
   revision = "c4d68588b7579f0f2ddb9d66db374d17bcf7a7c7"
+  version = "v0.1.0"
 
 [solve-meta]
   analyzer-name = "dep"

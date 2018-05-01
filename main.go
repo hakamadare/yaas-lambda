@@ -21,13 +21,13 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
   var err error
 
   // inspect the request path
-  rpath := request.Path
+  rmethod := request.HTTPMethod
   rbody := request.Body
-  log.Printf("path: %s", rpath)
+  log.Printf("method: %s", rmethod)
   log.Printf("body: %s", rbody)
 
-  switch rpath {
-  case "/yaas/invert":
+  switch rmethod {
+  case "PUT":
     body,e := parseJsonBody(rbody)
     if e != nil {
       err = e
@@ -35,7 +35,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
     } else {
       ys,err = yaas.Inverse(yaas.ParsedYes(body))
     }
-  case "/yaas":
+  case "GET":
     ys,err = yaas.Yes()
   }
 
@@ -43,7 +43,7 @@ func Handler(ctx context.Context, request events.APIGatewayProxyRequest) (events
     marshaled,err := json.Marshal(string(ys))
 
     if (err != nil) {
-      return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500}, err
+      return events.APIGatewayProxyResponse{Body: err.Error(), StatusCode: 500, Headers: corsHeaders()}, err
     }
 
     body := string(marshaled)
@@ -62,7 +62,7 @@ func parseJsonBody(body string) (string, error) {
 
 func corsHeaders() (map[string]string) {
   headers := map[string]string{
-    "Access-Control-Allow-Methods": "GET",
+    "Access-Control-Allow-Methods": "GET,PUT",
     "Access-Control-Allow-Headers": "*",
     "Access-Control-Allow-Origin": "*",
   }
